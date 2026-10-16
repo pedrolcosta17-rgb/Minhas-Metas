@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F5F5F7">
+<title>Metas do Pedro</title>
+<style>
+/* Layout: igual ao Minha Rotina (menu lateral no PC, barra embaixo no celular), só 3 telas e listas simples, base neutra */
+:root{
+  --destaque:#2B2B30; --destaque-texto:#ffffff; --destaque-suave:#ECECEF;
+  --bg:#F5F5F7; --superficie:#FFFFFF; --superficie-2:#F0F0F3; --borda:#E3E3E8;
+  --texto:#1C1C1F; --texto-2:#6B6B73;
+  --c-concurso:#4F6BED; --c-cnh:#D9822B; --c-facul:#8B5CF6; --c-docs:#0E9F9A;
+  --sombra:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --destaque:#E6E6EA; --destaque-texto:#111113; --destaque-suave:#2A2A2F;
+  --bg:#111113; --superficie:#1B1B1E; --superficie-2:#242428; --borda:#2F2F34;
+  --texto:#EDEDF0; --texto-2:#A1A1AA;
+  --c-concurso:#8EA2FF; --c-cnh:#F2AE63; --c-facul:#B79BFF; --c-docs:#5FD4CF;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --destaque:#E6E6EA; --destaque-texto:#111113; --destaque-suave:#2A2A2F;
+  --bg:#111113; --superficie:#1B1B1E; --superficie-2:#242428; --borda:#2F2F34;
+  --texto:#EDEDF0; --texto-2:#A1A1AA;
+  --c-concurso:#8EA2FF; --c-cnh:#F2AE63; --c-facul:#B79BFF; --c-docs:#5FD4CF;
+  --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%}
+:root{padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--texto);line-height:1.45;-webkit-font-smoothing:antialiased}
+h1,h2{margin:0;line-height:1.2;text-wrap:balance}
+h1{font-size:clamp(1.4rem,2.6vw,1.8rem);letter-spacing:-.02em}
+p{margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--destaque);outline-offset:2px;border-radius:8px}
+.ico{width:20px;height:20px;flex:none}
+.suave{color:var(--texto-2);font-size:.88rem}
+
+/* Estrutura */
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100%}
+.lateral{position:sticky;top:env(safe-area-inset-top,0px);height:100vh;display:flex;flex-direction:column;gap:4px;padding:22px 14px;background:var(--superficie);border-right:1px solid var(--borda)}
+.marca{display:flex;align-items:center;gap:10px;padding:4px 10px 22px;font-weight:700;font-size:1.1rem}
+.marca-logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--destaque);color:var(--destaque-texto)}
+.nav-btn{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-radius:12px;background:none;color:var(--texto-2);cursor:pointer;text-align:left}
+.nav-btn:hover{background:var(--superficie-2);color:var(--texto)}
+.nav-btn[aria-current="page"]{background:var(--destaque-suave);color:var(--destaque);font-weight:600}
+main{padding-block:28px 110px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));width:100%;max-width:760px;min-width:0}
+@media (min-width:861px){main{padding-left:40px;padding-right:40px}}
+@media (max-width:860px){
+  .app{grid-template-columns:1fr}
+  .lateral{position:fixed;z-index:30;left:0;right:0;bottom:0;top:auto;height:auto;flex-direction:row;justify-content:space-around;
+    padding:6px max(4px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(4px,env(safe-area-inset-left,0px));
+    border-right:0;border-top:1px solid var(--borda)}
+  .marca{display:none}
+  .nav-btn{flex-direction:column;gap:2px;padding:6px 4px;font-size:.72rem;text-align:center}
+}
+.tela{display:none}
+.tela.ativa{display:grid;gap:18px}
+.topo{display:grid;gap:4px}
+
+/* Progresso */
+.progresso{display:grid;gap:8px}
+.progresso .linha{display:flex;justify-content:space-between;font-size:.9rem;font-variant-numeric:tabular-nums}
+.barra{height:10px;border-radius:999px;background:var(--superficie-2);overflow:hidden}
+.barra>span{display:block;height:100%;width:0;border-radius:inherit;background:var(--destaque);transition:width .6s cubic-bezier(.2,.8,.2,1)}
+
+/* Abas de prazo */
+.segmentado{display:flex;background:var(--superficie-2);padding:3px;border-radius:12px;gap:2px}
+.segmentado button{flex:1;border:0;background:none;padding:8px 10px;border-radius:9px;cursor:pointer;color:var(--texto-2)}
+.segmentado button[aria-pressed="true"]{background:var(--superficie);color:var(--texto);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+.periodo-nav{display:flex;align-items:center;gap:8px}
+.periodo-nav h2{flex:1;text-align:center;font-size:1.15rem}
+.seta{width:40px;height:40px;border-radius:12px;border:1px solid var(--borda);background:var(--superficie);cursor:pointer;display:grid;place-items:center;color:var(--texto)}
+.seta:hover{background:var(--superficie-2)}
+.seta svg{width:18px;height:18px}
+.voltar-hoje{border:0;background:none;color:var(--destaque);font-weight:600;cursor:pointer;font-size:.85rem;padding:4px 8px;border-radius:8px}
+/* Cartão de lista */
+.cartao{background:var(--superficie);border:1px solid var(--borda);border-radius:16px;box-shadow:var(--sombra);min-width:0}
+.grupo-cab{display:flex;align-items:center;gap:8px;padding:14px 16px 6px;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--cat)}
+.grupo-cab .conta{margin-left:auto;font-weight:600;color:var(--texto-2);letter-spacing:0;text-transform:none;font-variant-numeric:tabular-nums}
+ul.lista{list-style:none;margin:0;padding:0 8px 8px}
+.item{display:flex;align-items:center;gap:10px;padding:8px;border-radius:12px}
+.item:hover{background:var(--superficie-2)}
+.item .txt{flex:1;min-width:0;overflow-wrap:anywhere}
+.item.feita .txt{text-decoration:line-through;color:var(--texto-2)}
+.bolinha{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;border:2px solid var(--cat,var(--destaque));background:var(--superficie);color:transparent;cursor:pointer;padding:0;transition:background .2s,color .2s}
+.bolinha svg{width:14px;height:14px}
+.bolinha:hover{color:var(--cat,var(--destaque))}
+.bolinha[aria-pressed="true"]{background:var(--destaque);border-color:var(--destaque);color:var(--destaque-texto)}
+.bolinha.pop{animation:pop .4s ease}
+@keyframes pop{40%{transform:scale(1.3)}}
+.mini-btn{border:0;background:none;color:var(--texto-2);cursor:pointer;padding:6px;border-radius:8px;display:grid;place-items:center;flex:none}
+.mini-btn:hover{background:var(--superficie);color:var(--texto)}
+.mini-btn svg{width:18px;height:18px}
+.vazio{padding:18px 16px;color:var(--texto-2);font-size:.9rem}
+
+/* Adicionar */
+.adicionar{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
+.adicionar input,.adicionar select{padding:10px 12px;border-radius:11px;border:1px solid var(--borda);background:var(--bg);color:var(--texto);min-width:0}
+.adicionar input{flex:1 1 200px}
+.adicionar select{flex:1 1 120px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:11px;cursor:pointer;background:var(--superficie);border:1px solid var(--borda);color:var(--texto);font-weight:600}
+.btn:hover{background:var(--superficie-2)}
+.btn-primario{background:var(--destaque);border-color:var(--destaque);color:var(--destaque-texto)}
+.btn-primario:hover{background:var(--destaque);filter:brightness(1.06)}
+
+/* Ajustes */
+.ajuste{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px;border-bottom:1px solid var(--borda);flex-wrap:wrap}
+.ajuste:last-child{border-bottom:0}
+.ajuste>div:first-child{flex:1;min-width:180px}
+.ajuste strong{display:block}
+.cores{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cor{width:32px;height:32px;border-radius:50%;border:3px solid var(--superficie);box-shadow:0 0 0 1px var(--borda);cursor:pointer;padding:0}
+.cor[aria-pressed="true"]{box-shadow:0 0 0 2px var(--texto)}
+.cor-livre{width:40px;height:32px;padding:0;border:1px solid var(--borda);border-radius:10px;background:none;cursor:pointer}
+.ajuste .segmentado{min-width:240px}
+
+.ponto{width:14px;height:14px;border-radius:50%;background:var(--cat);flex:none}
+.cat-form{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px 16px;border-top:1px solid var(--borda)}
+.cat-form input[type="text"]{flex:1 1 180px;padding:10px 12px;border-radius:11px;border:1px solid var(--borda);background:var(--bg);color:var(--texto);min-width:0}
+.titulo-cartao{padding:16px 16px 4px;font-weight:700}
+/* Aviso com desfazer */
+.aviso{position:fixed;z-index:40;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:12px;padding:10px 10px 10px 16px;border-radius:13px;background:var(--texto);color:var(--bg);box-shadow:var(--sombra);font-size:.9rem;max-width:calc(100% - 32px)}
+.aviso button{border:0;background:none;color:var(--destaque-suave);font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px}
+@media (max-width:860px){.aviso{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="lateral" aria-label="Navegação principal">
+    <div class="marca"><span class="marca-logo"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span> Minhas Metas</div>
+    <button class="nav-btn" data-tela="metas"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Metas</button>
+    <button class="nav-btn" data-tela="depois"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Depois</button>
+    <button class="nav-btn" data-tela="ajustes"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajustes</button>
+  </nav>
+
+  <main>
+    <section class="tela" id="tela-metas" aria-labelledby="t-metas">
+      <div class="topo"><h1 id="t-metas">Minhas metas</h1><p class="suave" id="hoje"></p></div>
+      <div class="segmentado" role="group" aria-label="Prazo">
+        <button type="button" data-hz="mes" aria-pressed="true">Mês</button>
+        <button type="button" data-hz="semestre" aria-pressed="false">Semestre</button>
+        <button type="button" data-hz="ano" aria-pressed="false">Ano</button>
+      </div>
+      <div class="periodo-nav">
+        <button type="button" class="seta" id="anterior" aria-label="Período anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 id="periodoTitulo" aria-live="polite">Outubro de 2026</h2>
+        <button type="button" class="seta" id="proximo" aria-label="Próximo período"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+      <p style="text-align:center;margin-top:-10px"><button type="button" class="voltar-hoje" id="voltarHoje" hidden>Voltar para o atual</button></p>
+      <div class="progresso"><div class="linha"><span id="rotuloProg">Feitas</span><span id="contaProg">0 de 0</span></div><div class="barra"><span id="barraProg"></span></div></div>
+      <div id="grupos" style="display:grid;gap:14px"></div>
+      <form class="cartao adicionar" id="formMeta">
+        <input id="metaTexto" type="text" placeholder="Nova meta para este período" aria-label="Nova meta" required>
+        <select id="metaArea" aria-label="Área"></select>
+        <button class="btn btn-primario" type="submit">Adicionar</button>
+      </form>
+    </section>
+
+    <section class="tela" id="tela-depois" aria-labelledby="t-depois">
+      <div class="topo"><h1 id="t-depois">Para depois</h1><p class="suave">Planos que entram quando a rotina de estudo estiver firme.</p></div>
+      <div class="cartao"><ul class="lista" id="listaDepois" style="padding-top:8px"></ul></div>
+      <form class="cartao adicionar" id="formDepois">
+        <input id="depoisTexto" type="text" placeholder="Nova ideia para depois" aria-label="Nova ideia para depois" required>
+        <button class="btn btn-primario" type="submit">Adicionar</button>
+      </form>
+    </section>
+
+    <section class="tela" id="tela-ajustes" aria-labelledby="t-ajustes">
+      <div class="topo"><h1 id="t-ajustes">Ajustes</h1></div>
+      <div class="cartao">
+        <div class="ajuste"><div><strong>Cor</strong><span class="suave">Botões, menu e barra de progresso.</span></div><div class="cores" id="cores"></div></div>
+        <div class="ajuste"><div><strong>Tema</strong></div>
+          <div class="segmentado" role="group" aria-label="Tema">
+            <button type="button" data-tema="sistema" aria-pressed="true">Sistema</button>
+            <button type="button" data-tema="claro" aria-pressed="false">Claro</button>
+            <button type="button" data-tema="escuro" aria-pressed="false">Escuro</button>
+          </div></div>
+        <div class="ajuste"><div><strong>Recomeçar</strong><span class="suave">Volta para a lista inicial de metas.</span></div><div id="zerarArea"><button type="button" class="btn" id="zerar">Recomeçar</button></div></div>
+      </div>
+      <div class="cartao">
+        <p class="titulo-cartao">Categorias</p>
+        <p class="suave" style="padding:0 16px 8px">Ao tirar uma categoria, as metas dela vão para “Sem categoria”.</p>
+        <ul class="lista" id="listaCats"></ul>
+        <form class="cat-form" id="formCat">
+          <input id="catNome" type="text" placeholder="Nova categoria" aria-label="Nome da nova categoria" required>
+          <input id="catCor" type="color" class="cor-livre" value="#E0567A" aria-label="Cor da nova categoria">
+          <button class="btn btn-primario" type="submit">Adicionar</button>
+        </form>
+      </div>
+      <p class="suave">Tudo fica salvo só neste navegador.</p>
+    </section>
+  </main>
+</div>
+<div class="aviso" id="aviso" role="status" hidden><span id="avisoTxt"></span><button type="button" id="desfazer">Desfazer</button></div>
+
+<script>
+const AREAS_INICIAIS = [
+  {id:"concurso", nome:"Concurso", cor:"var(--c-concurso)"},
+  {id:"cnh", nome:"Habilitação", cor:"var(--c-cnh)"},
+  {id:"facul", nome:"Faculdade e trabalho", cor:"var(--c-facul)"},
+  {id:"docs", nome:"Documentos", cor:"var(--c-docs)"}
+];
+const SEM_CAT = {id:"geral", nome:"Sem categoria", cor:"var(--texto-2)", fixa:true};
+function areas(){ return estado.areas.concat(SEM_CAT); }
+function areaDe(id){ return areas().find(a => a.id === id) || SEM_CAT; }
+/* Período de cada meta: "2026-10" = mês, "2026-S2" = semestre, "2026" = ano */
+const INICIAIS = {
+  metas: [
+    ["Comprar os materiais de estudo","concurso","2026-10"],
+    ["Testar QConcursos e TecConcursos","concurso","2026-10"],
+    ["Criar o baralho Concurso no Anki","concurso","2026-10"],
+    ["Guardar o edital de Araguaína","concurso","2026-10",true],
+    ["Primeiro fim de semana de estudo","concurso","2026-10"],
+    ["Foto e digitais no Detran","cnh","2026-10",true],
+    ["Exames médico e psicológico","cnh","2026-10"],
+    ["Mensagem ao coordenador sobre estágio","facul","2026-10",true],
+    ["Votar no segundo turno","docs","2026-10"],
+    ["Tirar o passaporte","docs","2026-11"],
+    ["Montar a rotina das férias da faculdade","concurso","2026-12"],
+    ["Conversar com a secretária sobre a administração","facul","2027-02"],
+    ["Manter 6 horas de estudo por semana","concurso","2026-S2"],
+    ["Acertar 25 de 30 nos simulados","cnh","2026-S2"],
+    ["Passar na prova teórica","cnh","2026-S2"],
+    ["Aulas práticas até ficar confiante","cnh","2026-S2"],
+    ["Passar na prova prática e pegar a PPD","cnh","2026-S2"],
+    ["Fechar o semestre com boas notas","facul","2026-S2"],
+    ["Fazer a primeira prova de nível 1","concurso","2027"],
+    ["Passar num concurso de nível 1","concurso","2027"]
+  ],
+  depois: ["Academia e ganhar peso","Nutricionista pela UBS","Tratamento com a fono (ver TFD)","Estágio em programação","Concursos de nível 2 e 3","Mestrado fora","App que corrige redação de concurso"]
+};
+const CORES = [
+  {nome:"Grafite", claro:"#2B2B30", escuro:"#E6E6EA"},
+  {nome:"Sálvia", claro:"#3E8F68", escuro:"#7CCB9F"},
+  {nome:"Menta", claro:"#2E8A7A", escuro:"#6FD1BE"},
+  {nome:"Oliva", claro:"#6E8A2A", escuro:"#B5CF6E"},
+  {nome:"Azul", claro:"#3D6FC2", escuro:"#8EB0F0"},
+  {nome:"Lilás", claro:"#7A5CC2", escuro:"#B9A4F0"},
+  {nome:"Coral", claro:"#C2563D", escuro:"#F09A85"}
+];
+const MESES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const CHAVE = "minhas-metas-pedro-v3";
+const ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>';
+const ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const ICO_SUBIR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+let n = 0; const novoId = () => "i" + Date.now().toString(36) + (n++);
+
+/* Períodos */
+function chaveAtual(tipo, d = new Date()){
+  const y = d.getFullYear(), m = d.getMonth() + 1;
+  if (tipo === "mes") return `${y}-${String(m).padStart(2, "0")}`;
+  if (tipo === "semestre") return `${y}-S${m <= 6 ? 1 : 2}`;
+  return String(y);
+}
+function tipoDa(k){ return /-S\d$/.test(k) ? "semestre" : /-\d\d$/.test(k) ? "mes" : "ano"; }
+function nomeDo(k){
+  const t = tipoDa(k), y = k.slice(0, 4);
+  if (t === "mes") return `${MESES[+k.slice(5) - 1]} de ${y}`;
+  if (t === "semestre") return `${k.slice(-1)}º semestre de ${y}`;
+  return `Ano de ${y}`;
+}
+function mover(k, passo){
+  const t = tipoDa(k), y = +k.slice(0, 4);
+  if (t === "mes") { const i = y * 12 + (+k.slice(5) - 1) + passo; return `${Math.floor(i / 12)}-${String(i % 12 + 1).padStart(2, "0")}`; }
+  if (t === "semestre") { const i = y * 2 + (+k.slice(-1) - 1) + passo; return `${Math.floor(i / 2)}-S${i % 2 + 1}`; }
+  return String(y + passo);
+}
+
+function inicial(){
+  return {
+    metas: INICIAIS.metas.map(([t, area, p, feita]) => ({id:novoId(), t, area, p, feita:!!feita})),
+    depois: INICIAIS.depois.map(t => ({id:novoId(), t})),
+    areas: AREAS_INICIAIS.map(a => ({...a})),
+    ajustes: {cor:"Grafite", corLivre:null, tema:"sistema", tipo:"mes"}
+  };
+}
+let estado;
+try { estado = JSON.parse(localStorage.getItem(CHAVE)); } catch(e) {}
+if (!estado || !Array.isArray(estado.metas)) {
+  estado = inicial();
+  try { /* aproveita o que já foi marcado na versão anterior */
+    const v2 = JSON.parse(localStorage.getItem("minhas-metas-pedro-v2"));
+    if (v2 && Array.isArray(v2.metas)) {
+      const hoje = new Date();
+      estado.metas = v2.metas.map(m => ({id:m.id || novoId(), t:m.t, area:m.area, feita:!!m.feita, p:chaveAtual(m.h === "semestre" ? "semestre" : m.h === "ano" ? "ano" : "mes", hoje)}));
+      if (Array.isArray(v2.depois)) estado.depois = v2.depois;
+      if (v2.ajustes) estado.ajustes = Object.assign(estado.ajustes, {cor:v2.ajustes.cor, corLivre:v2.ajustes.corLivre, tema:v2.ajustes.tema});
+    }
+  } catch(e) {}
+}
+if (!Array.isArray(estado.areas)) estado.areas = AREAS_INICIAIS.map(a => ({...a}));
+estado.ajustes = Object.assign({cor:"Grafite", corLivre:null, tema:"sistema", tipo:"mes"}, estado.ajustes);
+if (!estado.ajustes.neutro) { if (estado.ajustes.cor === "Sálvia" && !estado.ajustes.corLivre) estado.ajustes.cor = "Grafite"; estado.ajustes.neutro = true; }
+function salvar(){ try { localStorage.setItem(CHAVE, JSON.stringify(estado)); } catch(e) {} }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+let vendo = chaveAtual(estado.ajustes.tipo);
+
+/* Metas */
+function renderMetas(){
+  const tipo = tipoDa(vendo);
+  const doPeriodo = estado.metas.filter(m => m.p === vendo);
+  const ok = doPeriodo.filter(m => m.feita).length;
+  document.getElementById("periodoTitulo").textContent = nomeDo(vendo);
+  document.getElementById("voltarHoje").hidden = vendo === chaveAtual(tipo);
+  document.getElementById("contaProg").textContent = `${ok} de ${doPeriodo.length}`;
+  document.getElementById("barraProg").style.width = (doPeriodo.length ? Math.round(ok / doPeriodo.length * 100) : 0) + "%";
+  document.querySelectorAll("[data-hz]").forEach(b => b.setAttribute("aria-pressed", b.dataset.hz === tipo));
+  const ids = new Set(estado.areas.map(a => a.id));
+  const html = areas().map(a => {
+    const ms = doPeriodo.filter(m => a.fixa ? !ids.has(m.area) : m.area === a.id).sort((x, y) => x.feita - y.feita);
+    if (!ms.length) return "";
+    return `<div class="cartao" style="--cat:${a.cor}">
+      <div class="grupo-cab">${a.nome}<span class="conta">${ms.filter(m => m.feita).length} de ${ms.length}</span></div>
+      <ul class="lista">${ms.map(m => `<li class="item ${m.feita ? "feita" : ""}">
+        <button type="button" class="bolinha" data-feita="${m.id}" aria-pressed="${m.feita}" aria-label="${m.feita ? "Desmarcar" : "Concluir"}: ${esc(m.t)}">${ICO_OK}</button>
+        <span class="txt">${esc(m.t)}</span>
+        <button type="button" class="mini-btn" data-tirar="${m.id}" aria-label="Tirar meta: ${esc(m.t)}" title="Tirar">${ICO_X}</button>
+      </li>`).join("")}</ul></div>`;
+  }).join("");
+  document.getElementById("grupos").innerHTML = html || `<div class="cartao vazio">Nenhuma meta em ${nomeDo(vendo).toLowerCase()}. Adicione uma abaixo.</div>`;
+}
+document.getElementById("grupos").addEventListener("click", e => {
+  const f = e.target.closest("[data-feita]");
+  if (f) {
+    const m = estado.metas.find(x => x.id === f.dataset.feita); m.feita = !m.feita; salvar(); renderMetas();
+    const nb = document.querySelector(`[data-feita="${m.id}"]`); if (nb) { nb.classList.add("pop"); nb.focus(); }
+    return;
+  }
+  const t = e.target.closest("[data-tirar]");
+  if (t) tirar("metas", t.dataset.tirar);
+});
+document.querySelectorAll("[data-hz]").forEach(b => b.addEventListener("click", () => {
+  vendo = chaveAtual(b.dataset.hz); estado.ajustes.tipo = b.dataset.hz; salvar(); renderMetas();
+}));
+document.getElementById("anterior").addEventListener("click", () => { vendo = mover(vendo, -1); renderMetas(); });
+document.getElementById("proximo").addEventListener("click", () => { vendo = mover(vendo, 1); renderMetas(); });
+document.getElementById("voltarHoje").addEventListener("click", () => { vendo = chaveAtual(tipoDa(vendo)); renderMetas(); });
+const selArea = document.getElementById("metaArea");
+function preencherAreas(){
+  const atual = selArea.value;
+  selArea.innerHTML = areas().map(a => `<option value="${a.id}">${esc(a.nome)}</option>`).join("");
+  if (areas().some(a => a.id === atual)) selArea.value = atual;
+}
+document.getElementById("formMeta").addEventListener("submit", e => {
+  e.preventDefault();
+  const inp = document.getElementById("metaTexto"), t = inp.value.trim(); if (!t) return;
+  estado.metas.push({id:novoId(), t, area:selArea.value, p:vendo, feita:false}); salvar();
+  inp.value = ""; renderMetas();
+});
+
+/* Depois */
+function renderDepois(){
+  document.getElementById("listaDepois").innerHTML = estado.depois.map(d => `<li class="item">
+      <span class="txt">${esc(d.t)}</span>
+      <button type="button" class="mini-btn" data-virar="${d.id}" aria-label="Virar meta: ${esc(d.t)}" title="Virar meta">${ICO_SUBIR}</button>
+      <button type="button" class="mini-btn" data-tirar-d="${d.id}" aria-label="Tirar: ${esc(d.t)}" title="Tirar">${ICO_X}</button>
+    </li>`).join("") || `<li class="vazio">Nada guardado para depois.</li>`;
+}
+document.getElementById("listaDepois").addEventListener("click", e => {
+  const v = e.target.closest("[data-virar]");
+  if (v) {
+    const i = estado.depois.findIndex(x => x.id === v.dataset.virar), d = estado.depois[i];
+    estado.depois.splice(i, 1);
+    estado.metas.push({id:novoId(), t:d.t, area:(estado.areas[0] || SEM_CAT).id, p:vendo, feita:false});
+    salvar(); renderDepois(); renderMetas(); avisar(`“${d.t}” virou meta de ${nomeDo(vendo).toLowerCase()}.`, null);
+    return;
+  }
+  const t = e.target.closest("[data-tirar-d]");
+  if (t) tirar("depois", t.dataset.tirarD);
+});
+document.getElementById("formDepois").addEventListener("submit", e => {
+  e.preventDefault();
+  const inp = document.getElementById("depoisTexto"), t = inp.value.trim(); if (!t) return;
+  estado.depois.push({id:novoId(), t}); salvar(); inp.value = ""; renderDepois();
+});
+
+/* Tirar com desfazer */
+let timerAviso;
+function tirar(lista, id){
+  const i = estado[lista].findIndex(x => x.id === id); if (i < 0) return;
+  const [item] = estado[lista].splice(i, 1); salvar();
+  lista === "metas" ? renderMetas() : renderDepois();
+  avisar(`“${item.t}” foi tirada.`, () => { estado[lista].splice(i, 0, item); salvar(); lista === "metas" ? renderMetas() : renderDepois(); });
+}
+function avisar(txt, desfazer){
+  const av = document.getElementById("aviso"), btn = document.getElementById("desfazer");
+  document.getElementById("avisoTxt").textContent = txt;
+  btn.hidden = !desfazer;
+  btn.onclick = () => { if (desfazer) desfazer(); av.hidden = true; };
+  av.hidden = false; clearTimeout(timerAviso); timerAviso = setTimeout(() => av.hidden = true, 5000);
+}
+
+/* Categorias */
+function renderCats(){
+  document.getElementById("listaCats").innerHTML = estado.areas.map(a => {
+    const qtd = estado.metas.filter(m => m.area === a.id).length;
+    return `<li class="item" style="--cat:${a.cor}"><span class="ponto"></span><span class="txt">${esc(a.nome)} <span class="suave">· ${qtd} ${qtd === 1 ? "meta" : "metas"}</span></span>
+      <button type="button" class="mini-btn" data-tirar-cat="${a.id}" aria-label="Tirar categoria ${esc(a.nome)}" title="Tirar">${ICO_X}</button></li>`;
+  }).join("") || `<li class="vazio">Nenhuma categoria. As metas ficam em “Sem categoria”.</li>`;
+  preencherAreas();
+}
+document.getElementById("listaCats").addEventListener("click", e => {
+  const b = e.target.closest("[data-tirar-cat]"); if (!b) return;
+  const i = estado.areas.findIndex(a => a.id === b.dataset.tirarCat); if (i < 0) return;
+  const [cat] = estado.areas.splice(i, 1);
+  const movidas = estado.metas.filter(m => m.area === cat.id);
+  movidas.forEach(m => m.area = "geral");
+  salvar(); renderCats(); renderMetas();
+  avisar(`Categoria “${cat.nome}” tirada.`, () => { estado.areas.splice(i, 0, cat); movidas.forEach(m => m.area = cat.id); salvar(); renderCats(); renderMetas(); });
+});
+document.getElementById("formCat").addEventListener("submit", e => {
+  e.preventDefault();
+  const inp = document.getElementById("catNome"), nome = inp.value.trim(); if (!nome) return;
+  estado.areas.push({id:novoId(), nome, cor:document.getElementById("catCor").value});
+  salvar(); inp.value = ""; renderCats(); renderMetas();
+});
+
+/* Ajustes */
+const raiz = document.documentElement, temaHost = raiz.dataset.theme || "";
+const aj = estado.ajustes;
+function escuro(){ return raiz.dataset.theme === "dark" || (!raiz.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches); }
+function textoSobre(hex){ const v = parseInt(hex.slice(1), 16); return ((v >> 16 & 255) * 299 + (v >> 8 & 255) * 587 + (v & 255) * 114) / 1000 > 150 ? "#10201A" : "#FFFFFF"; }
+function aplicarCor(){
+  const c = CORES.find(x => x.nome === aj.cor);
+  const hex = aj.corLivre || (c ? (escuro() ? c.escuro : c.claro) : (escuro() ? "#E6E6EA" : "#2B2B30"));
+  raiz.style.setProperty("--destaque", hex);
+  raiz.style.setProperty("--destaque-texto", textoSobre(hex));
+  raiz.style.setProperty("--destaque-suave", `color-mix(in srgb, ${hex} 16%, transparent)`);
+  document.getElementById("cores").innerHTML = CORES.map(x =>
+    `<button type="button" class="cor" data-cor="${x.nome}" aria-label="${x.nome}" title="${x.nome}" aria-pressed="${!aj.corLivre && aj.cor === x.nome}" style="background:${escuro() ? x.escuro : x.claro}"></button>`).join("")
+    + `<input type="color" class="cor-livre" id="corLivre" aria-label="Outra cor" value="${aj.corLivre || "#4F6BED"}">`;
+}
+function aplicarTema(){
+  if (aj.tema === "claro") raiz.dataset.theme = "light";
+  else if (aj.tema === "escuro") raiz.dataset.theme = "dark";
+  else if (temaHost) raiz.dataset.theme = temaHost; else delete raiz.dataset.theme;
+  document.querySelectorAll("[data-tema]").forEach(b => b.setAttribute("aria-pressed", b.dataset.tema === aj.tema));
+  aplicarCor();
+}
+document.getElementById("cores").addEventListener("click", e => {
+  const b = e.target.closest("[data-cor]"); if (!b) return;
+  aj.cor = b.dataset.cor; aj.corLivre = null; salvar(); aplicarCor();
+});
+document.getElementById("cores").addEventListener("change", e => {
+  if (e.target.id !== "corLivre") return;
+  aj.corLivre = e.target.value; salvar(); aplicarCor();
+});
+document.querySelectorAll("[data-tema]").forEach(b => b.addEventListener("click", () => { aj.tema = b.dataset.tema; salvar(); aplicarTema(); }));
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", aplicarCor);
+const zArea = document.getElementById("zerarArea");
+zArea.addEventListener("click", e => {
+  if (e.target.id === "zerar") zArea.innerHTML = `<button type="button" class="btn btn-primario" id="zerarSim">Sim, recomeçar</button> <button type="button" class="btn" id="zerarNao">Cancelar</button>`;
+  else if (e.target.id === "zerarSim") { const a = estado.ajustes; estado = inicial(); estado.ajustes = a; salvar(); renderCats(); renderMetas(); renderDepois(); zArea.innerHTML = `<button type="button" class="btn" id="zerar">Recomeçar</button>`; avisar("Lista recomeçada.", null); }
+  else if (e.target.id === "zerarNao") zArea.innerHTML = `<button type="button" class="btn" id="zerar">Recomeçar</button>`;
+});
+
+/* Navegação */
+const TELAS = ["metas","depois","ajustes"];
+function irPara(t){
+  if (!TELAS.includes(t)) t = "metas";
+  TELAS.forEach(x => document.getElementById("tela-" + x).classList.toggle("ativa", x === t));
+  document.querySelectorAll(".nav-btn").forEach(b => { if (b.dataset.tela === t) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll(".nav-btn").forEach(b => b.addEventListener("click", () => irPara(b.dataset.tela)));
+document.getElementById("hoje").textContent = new Date().toLocaleDateString("pt-BR", {weekday:"long", day:"numeric", month:"long"});
+aplicarTema(); renderCats(); renderMetas(); renderDepois();
+irPara(location.hash.slice(1));
+</script>
+
+</body>
+</html>
